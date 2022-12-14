@@ -1,0 +1,16 @@
+POST http://127.0.0.1:3003/api/users
+content-type: application/json
+
+{
+    "username":"a",
+    "name":"name",
+    "password":"aaaaaaaaaaaaaaa"
+}
+
+###
+
+GET http://127.0.0.1:3003/api/users
+
+###
+
+GET http://127.0.0.1:3003/api/blogs

@@ -70,6 +70,50 @@ test('post creates new blog and handles likes not defined to 0 likes', async () 
         .toEqual(0)
 })
 
+test('post new blog without title, url response status 400', async () => {
+    const newBlog = {
+        author: "autori no lieks",
+    }
+    response = await api
+        .post('/api/blogs')
+        .send(newBlog)
+        .expect(400)
+
+})
+
+test('deletes existing blog', async () => {
+
+    const blogsAfterPost = await helper.blogsInDb()
+    const blogToDelete = blogsAfterPost[0]
+    response = await api
+        .delete(`/api/blogs/${blogToDelete.id}`)
+        .expect(204)
+    const blogsAfterDelete = await helper.blogsInDb()
+    expect(blogsAfterDelete)
+        .toHaveLength(helper.initialBlogs.length - 1)
+
+
+
+})
+
+
+test('modify a blog', async () => {
+    const blogsAfterPost = await helper.blogsInDb()
+    const mofifiedBlog = blogsAfterPost[0]
+    mofifiedBlog.likes = 500
+    const response = await api
+        .put(`/api/blogs/${mofifiedBlog.id}`)
+        .send(mofifiedBlog)
+        .expect(200)
+        .expect('Content-Type', /application\/json/)
+    expect(response.body.likes)
+        .toEqual(500)
+    const blogsAfterPut = await helper.blogsInDb()
+    expect(blogsAfterPut).toHaveLength(
+        helper.initialBlogs.length
+    )
+})
+
 
 afterAll(() => {
     mongoose.connection.close()
