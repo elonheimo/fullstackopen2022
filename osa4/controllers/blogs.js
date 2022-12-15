@@ -14,7 +14,6 @@ blogsRouter.get('/api/blogs', async (request, response) => {
 
 
 blogsRouter.post('/api/blogs', async (request, response) => {
-    const { title, author, url, likes } = request.body
 
 
     if (request.body.hasOwnProperty('url') == false &&
@@ -25,6 +24,7 @@ blogsRouter.post('/api/blogs', async (request, response) => {
     if (request.body.hasOwnProperty('likes') == false) {
         request.body['likes'] = 0
     }
+    const { title, author, url, likes } = request.body
 
     if (!request.user) {
         return response.status(401).json(
@@ -56,9 +56,6 @@ blogsRouter.delete('/api/blogs/:id', async (request, response) => {
         )
     }
 
-    logger.info(request.user)
-    logger.info(blogToRemove.user)
-
     if (blogToRemove.user.toString() === request.user._id.toString()) {
         await Blog.findByIdAndRemove(request.params.id)
         return response.status(204).end()
@@ -69,12 +66,24 @@ blogsRouter.delete('/api/blogs/:id', async (request, response) => {
 })
 
 blogsRouter.put('/api/blogs/:id', async (request, response) => {
-    const blog = await Blog.findByIdAndUpdate(
-        request.params.id,
-        request.body,
-        { new: true }
+    const blogToUpdate = await Blog.findById(request.params.id)
+    if (!request.user) {
+        return response.status(401).json(
+            { error: 'token missing or invalid' }
+        )
+    }
+    if (blogToUpdate.user.toString() === request.user._id.toString()) {
+        const blog = await Blog.findByIdAndUpdate(
+            request.params.id,
+            request.body,
+            { new: true }
+        )
+        return response.status(200).json(blog)
+    }
+
+    return response.status(401).json(
+        { error: 'not allowed to modify' }
     )
-    response.status(200).json(blog)
 })
 
 module.exports = blogsRouter
