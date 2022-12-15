@@ -1,3 +1,4 @@
+### post new user
 POST http://127.0.0.1:3003/api/users
 content-type: application/json
 
@@ -7,16 +8,14 @@ content-type: application/json
     "password":"aaaaaaaaaaaaaaa"
 }
 
-###
+### get users
 
 GET http://127.0.0.1:3003/api/users
 
-###
-
+### get blogs
 GET http://127.0.0.1:3003/api/blogs
 
 ### post blogs
-
 POST http://127.0.0.1:3003/api/blogs
 content-type: application/json
 Authorization: bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VybmFtZSI6ImFhYSIsImlkIjoiNjM5YTJiOTNmY2Y1MjViMjk4MmE3N2NhIiwiaWF0IjoxNjcxMDkyOTQ3fQ.M_EAs39TYjYy-uq6KhGz29ui3RkrbACs4YY82n0jbsQ
@@ -27,6 +26,12 @@ Authorization: bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VybmFtZSI6ImFhY
     "url": "String",
     "likes": 0
 }
+### remove blogs
+DELETE  http://127.0.0.1:3003/api/blogs/639ae3cfeb083f8eaab38fb2
+content-type: application/json
+Authorization: bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VybmFtZSI6ImFhYSIsImlkIjoiNjM5YTJiOTNmY2Y1MjViMjk4MmE3N2NhIiwiaWF0IjoxNjcxMDkyOTQ3fQ.M_EAs39TYjYy-uq6KhGz29ui3RkrbACs4YY82n0jbsQ
+
+
 
 ### post login
 

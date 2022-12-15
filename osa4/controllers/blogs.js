@@ -3,6 +3,7 @@ const json_web_token = require('jsonwebtoken')
 
 const Blog = require('../models/blog')
 const User = require('../models/user')
+const logger = require('../utils/logger')
 
 blogsRouter.get('/api/blogs', async (request, response) => {
     const blogs = await Blog
@@ -11,62 +12,60 @@ blogsRouter.get('/api/blogs', async (request, response) => {
     response.json(blogs)
 })
 
-const validateToken = request => {
-    const authorization = request.get('authorization')
-    if (!authorization) {
-        return null
-    }
-    if (authorization.toLowerCase().startsWith('bearer ')) {
-        return json_web_token.verify(
-            authorization.substring(7),
-            process.env.SECRET
-        )
-    }
-    return null
-}
 
 blogsRouter.post('/api/blogs', async (request, response) => {
     const { title, author, url, likes } = request.body
 
-    const decodedToken = json_web_token.verify(
-        request.token,
-        process.env.SECRET
-    )
-    if (!decodedToken) {
-        return response.status(401).json(
-            { error: 'token missing or invalid' }
-        )
-    }
-
-
-    if (request.body.hasOwnProperty('likes') == false) {
-        request.body['likes'] = 0
-    }
 
     if (request.body.hasOwnProperty('url') == false &&
         request.body.hasOwnProperty('title') == false) {
         response.status(400).end()
     }
 
-    const user_for_id = await User.findById(decodedToken.id)
+    if (request.body.hasOwnProperty('likes') == false) {
+        request.body['likes'] = 0
+    }
+
+    if (!request.user) {
+        return response.status(401).json(
+            { error: 'token missing or invalid' }
+        )
+    }
+
+
     const blog = new Blog({
         title,
         author,
         url,
         likes,
-        user: user_for_id._id
+        user: request.user._id.toString()
     })
     const saved_blog = await blog.save()
-    user_for_id.blogs = user_for_id.blogs.concat(saved_blog._id)
-    await user_for_id.save()
+    request.user.blogs = request.user.blogs.concat(saved_blog._id)
+    await request.user.save()
     response.status(201).json(saved_blog)
 
 
 })
 
 blogsRouter.delete('/api/blogs/:id', async (request, response) => {
-    await Blog.findByIdAndRemove(request.params.id)
-    response.status(204).end()
+    const blogToRemove = await Blog.findById(request.params.id)
+    if (!request.user) {
+        return response.status(401).json(
+            { error: 'token missing or invalid' }
+        )
+    }
+
+    logger.info(request.user)
+    logger.info(blogToRemove.user)
+
+    if (blogToRemove.user.toString() === request.user._id.toString()) {
+        await Blog.findByIdAndRemove(request.params.id)
+        return response.status(204).end()
+    }
+    return response.status(401).json(
+        { error: 'not allowed to remove' }
+    )
 })
 
 blogsRouter.put('/api/blogs/:id', async (request, response) => {
