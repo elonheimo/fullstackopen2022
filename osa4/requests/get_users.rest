@@ -2,7 +2,7 @@ POST http://127.0.0.1:3003/api/users
 content-type: application/json
 
 {
-    "username":"a",
+    "username":"aaa",
     "name":"name",
     "password":"aaaaaaaaaaaaaaa"
 }
@@ -15,14 +15,27 @@ GET http://127.0.0.1:3003/api/users
 
 GET http://127.0.0.1:3003/api/blogs
 
-###
+### post blogs
 
 POST http://127.0.0.1:3003/api/blogs
 content-type: application/json
+Authorization: bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VybmFtZSI6ImFhYSIsImlkIjoiNjM5YTJiOTNmY2Y1MjViMjk4MmE3N2NhIiwiaWF0IjoxNjcxMDkyOTQ3fQ.M_EAs39TYjYy-uq6KhGz29ui3RkrbACs4YY82n0jbsQ
 
 {
     "title": "String",
     "author": "String",
     "url": "String",
-    "likes": 0,
+    "likes": 0
 }
+
+### post login
+
+POST http://127.0.0.1:3003/api/login
+content-type: application/json
+
+{
+    "username": "aaa",
+    "password": "aaaaaaaaaaaaaaa"
+}
+
+
