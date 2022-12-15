@@ -7,7 +7,7 @@ loginRouter.post('/', async (request, response) => {
     const { username, password } = request.body
     const user = await User.findOne({ username })
 
-    const passwordCorrect = user === null
+    const passwordCorrect = (user === null)
         ? false
         : await bryct.compare(password, user.passwordHash)
 
@@ -30,3 +30,4 @@ loginRouter.post('/', async (request, response) => {
         })
 })
 
+module.exports = loginRouter
