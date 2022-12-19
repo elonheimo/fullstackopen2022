@@ -27,5 +27,25 @@ const create = async newBlog => {
   }
 }
 
+const remove = (id) => {
+  const config = {
+    headers: {Authorization: authToken}
+  }
+  const request = axios.delete(
+    `${baseUrl}/${id}`,
+    config
+  )
+  return request.then(response => response.data)
+}
+
+const update = (id, newBlog) => {
+  
+  const request = axios.put(
+    `${baseUrl}/${id}`,
+    newBlog
+  )
+  return request.then(response => response.data)
+}
+
 // eslint-disable-next-line import/no-anonymous-default-export
-export default { getAll, setAuthToken, create}
+export default { getAll, setAuthToken, create, update, remove}

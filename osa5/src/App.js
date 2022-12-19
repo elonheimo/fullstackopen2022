@@ -1,14 +1,12 @@
-import { useState, useEffect } from 'react'
+import { useState, useEffect, useRef } from 'react'
 import Blog from './components/Blog'
+import BlogForm from './components/BlogForm'
+import Togglable from './components/Togglable'
 import blogService from './services/blogs'
 import loginService from './services/login'
 
 const App = () => {
   const [blogs, setBlogs] = useState([])
-  const [title, setTitle] = useState('')
-  const [author, setAuthor] = useState('')
-  const [url, setUrl] = useState('')
-  const [likes, setLikes] = useState(0)
   const [errorMessage, setErrorMessage] = useState(null)
   const [username, setUsername] = useState('') 
   const [password, setPassword] = useState('')
@@ -89,73 +87,51 @@ const App = () => {
       <button onClick={handleLogout}>LOGOUT</button>
     </div>
   )
+  const blogFormRef = useRef()
   
-  const addBlog = (addBlogEvent) => {
-    addBlogEvent.preventDefault()
-    const newBlog = {
-      title: title,
-      author: author,
-      url: url,
-      likes: likes,
-      user: JSON.stringify(user.id)
-    }
+  const likeBlog = id => {
+    const blog = blogs.find(blog => blog.id === id)
+    const likedBlog = {...blog, likes: blog.likes+1}
+    likedBlog.user = likedBlog.user.id
     blogService
-      .create(newBlog)
-      .then(returnedBlog => {
-        const data = returnedBlog.data
-        newNotification(`Added new blog. ${data.title} by ${data.author}` )
-        console.log(`${JSON.stringify(returnedBlog.data)}`)
-        setTitle('')
-        setAuthor('')
-        setUrl('')
-        setLikes(0)
-      })
-      .catch(err => {
-        newNotification('fill all fields')
+      .update(id, likedBlog)
+      .then(() => {
+        blogService.getAll().then(blogs =>
+          setBlogs( blogs )
+        ) 
       })
   }
 
-  const blogForm = () => (
-    <form onSubmit={addBlog}>
-      <div>
-        title:
-          <input
-            type="text"
-            value={title}
-            name="Title"
-            onChange={({ target }) => setTitle(target.value)}
-          />
-      </div>
-      <div>
-        author:
-          <input
-            type="text"
-            value={author}
-            name="author"
-            onChange={({ target }) => setAuthor(target.value)}
-          />
-      </div>
-      <div>
-        url:
-          <input
-            type="text"
-            value={url}
-            name="url"
-            onChange={({ target }) => setUrl(target.value)}
-          />
-      </div>
-      <div>
-        likes:
-          <input
-            type="number"
-            value={likes}
-            name="likes"
-            onChange={({ target }) => setLikes(target.value)}
-          />
-      </div>
-      <button type="submit">save</button>
-    </form>
-  )
+  const deleteBlog = id => {
+    blogService
+      .remove(id)
+      .then(() => {
+        blogService.getAll().then(blogs =>
+          setBlogs( blogs )
+        ) 
+      })
+  }
+
+  const addBlog = (newBlog) => {
+    newBlog.user = JSON.stringify(user.id)
+    blogService
+    .create(newBlog)
+    .then(returnedBlog => {
+        const data = returnedBlog.data
+        newNotification(`Added new blog. ${data.title} by ${data.author}` )
+        console.log(`${JSON.stringify(returnedBlog.data)}`)
+        blogFormRef.current.toggleVisibility()
+
+        blogService.getAll().then(blogs =>
+          setBlogs( blogs )
+        ) 
+      })
+      .catch(err => {
+        newNotification('fill all fields')
+        return false
+      })
+    return true
+  }
 
   const Notification = ({ message }) => {
     return message === null
@@ -176,13 +152,21 @@ const App = () => {
         ? loginForm() 
         : <div>
             <p>{user.name} logged in</p>
-            {blogForm()}
+            <Togglable buttonLabel="create new blog" ref={blogFormRef}>
+              <BlogForm addBlog={addBlog} />
+            </Togglable>
             {logoutButton()}
            </div>
       }
-
-      {blogs.map(blog =>
-        <Blog key={blog.id} blog={blog} />
+      {console.log(JSON.stringify(user))}
+      {blogs.sort((a,b) => a.likes >= b.likes ? -1 : 1).map(blog =>
+        <Blog 
+        key={blog.id} 
+        blog={blog} 
+        likeBlog={likeBlog} 
+        deleteBlog={deleteBlog} 
+        user={(user)}
+        />
       )}
     </div>
   )
