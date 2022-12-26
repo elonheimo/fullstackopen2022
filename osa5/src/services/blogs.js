@@ -14,10 +14,10 @@ const getAll = () => {
 
 const create = async newBlog => {
   const config = {
-    headers: {Authorization: authToken}
+    headers: { Authorization: authToken }
   }
   try {
-    
+
     const response = await axios.post(
       baseUrl, newBlog, config
     )
@@ -29,7 +29,7 @@ const create = async newBlog => {
 
 const remove = (id) => {
   const config = {
-    headers: {Authorization: authToken}
+    headers: { Authorization: authToken }
   }
   const request = axios.delete(
     `${baseUrl}/${id}`,
@@ -39,7 +39,7 @@ const remove = (id) => {
 }
 
 const update = (id, newBlog) => {
-  
+
   const request = axios.put(
     `${baseUrl}/${id}`,
     newBlog
@@ -47,5 +47,4 @@ const update = (id, newBlog) => {
   return request.then(response => response.data)
 }
 
-// eslint-disable-next-line import/no-anonymous-default-export
-export default { getAll, setAuthToken, create, update, remove}
+export default { getAll, setAuthToken, create, update, remove }

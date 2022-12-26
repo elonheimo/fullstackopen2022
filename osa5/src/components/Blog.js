@@ -17,7 +17,9 @@ const Blog = ({blog, likeBlog, deleteBlog, user}) => {
 
   const deleteButton = () => {
     if (user && user.username === blog.user.username) {
-      return <button onClick={() => deleteBlog(blog.id)}>Remove</button>
+      return <button onClick={() => 
+        {window.confirm(`are u certain you want to delete ${blog.title} by ${blog.author}`)
+          && deleteBlog(blog.id)}}>Remove</button>
     }
     return null
   }
