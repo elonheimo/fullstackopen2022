@@ -1,6 +1,6 @@
-import { useState } from "react"
+import { useState } from 'react'
 
-const Blog = ({blog, likeBlog, deleteBlog, user}) => {
+const Blog = ({ blog, likeBlog, deleteBlog, user }) => {
   const blogStyle = {
     paddingTop: 10,
     paddingLeft: 2,
@@ -17,8 +17,8 @@ const Blog = ({blog, likeBlog, deleteBlog, user}) => {
 
   const deleteButton = () => {
     if (user && user.username === blog.user.username) {
-      return <button onClick={() => 
-        {window.confirm(`are u certain you want to delete ${blog.title} by ${blog.author}`)
+      return <button onClick={() =>
+      {window.confirm(`are u certain you want to delete ${blog.title} by ${blog.author}`)
           && deleteBlog(blog.id)}}>Remove</button>
     }
     return null
@@ -28,14 +28,14 @@ const Blog = ({blog, likeBlog, deleteBlog, user}) => {
     <div style={blogStyle}>
       {blog.title}
       {
-      showDetails  === false 
-        ? 
-        <button onClick={() => setShowDetails(!showDetails)}>show</button>
-        :
-        <button onClick={() => setShowDetails(!showDetails)}>hide</button>
+        showDetails  === false
+          ?
+          <button onClick={() => setShowDetails(!showDetails)}>show</button>
+          :
+          <button onClick={() => setShowDetails(!showDetails)}>hide</button>
       }
       {
-        showDetails && 
+        showDetails &&
         <div>
           <p style={pStyle}>{blog.url}</p>
           <p style={pStyle}>
@@ -46,7 +46,7 @@ const Blog = ({blog, likeBlog, deleteBlog, user}) => {
           {deleteButton()}
         </div>
       }
-    </div>  
+    </div>
   )
 }
 

@@ -8,14 +8,14 @@ import loginService from './services/login'
 const App = () => {
   const [blogs, setBlogs] = useState([])
   const [errorMessage, setErrorMessage] = useState(null)
-  const [username, setUsername] = useState('') 
+  const [username, setUsername] = useState('')
   const [password, setPassword] = useState('')
   const [user, setUser] = useState(null)
 
   useEffect(() => {
     blogService.getAll().then(blogs =>
       setBlogs( blogs )
-    )  
+    )
   }, [])
   useEffect(() => {
     const userJSON = window.localStorage.getItem('blogUser')
@@ -27,15 +27,15 @@ const App = () => {
   }, [])
   const newNotification = message => {
     setErrorMessage(message)
-      setTimeout(() => {
-        setErrorMessage(null)
-      }, 2000)
+    setTimeout(() => {
+      setErrorMessage(null)
+    }, 2000)
   }
   const handleLogin = async (loginEvent) => {
     loginEvent.preventDefault()
     try {
       const user = await loginService.login(
-        {username, password}
+        { username, password }
       )
       console.log(JSON.stringify(user))
       setUser(user)
@@ -43,9 +43,9 @@ const App = () => {
       window.localStorage.setItem(
         'blogUser', JSON.stringify(user)
       )
-      setUsername("")
-      setPassword("")
-    } catch {
+      setUsername('')
+      setPassword('')
+    } catch (err){
       setErrorMessage('ERROR: wrong credentials')
       setTimeout(() => {
         setErrorMessage(null)
@@ -57,27 +57,27 @@ const App = () => {
     <form onSubmit={handleLogin}>
       <div>
         username
-          <input
-            type="text"
-            value={username}
-            name="Username"
-            onChange={({ target }) => setUsername(target.value)}
-            />
+        <input
+          type="text"
+          value={username}
+          name="Username"
+          onChange={({ target }) => setUsername(target.value)}
+        />
       </div>
       password
-          <input
-            type="password"
-            value={password}
-            name="Password"
-            onChange={({ target }) => setPassword(target.value)}
-          />
+      <input
+        type="password"
+        value={password}
+        name="Password"
+        onChange={({ target }) => setPassword(target.value)}
+      />
       <div>
         <button type="submit">LOGIN</button>
       </div>
-    </form> 
+    </form>
   )
 
-  const handleLogout = async (logoutEvent) => {
+  const handleLogout = async () => {
     setUser(null)
     window.localStorage.clear()
   }
@@ -88,17 +88,17 @@ const App = () => {
     </div>
   )
   const blogFormRef = useRef()
-  
+
   const likeBlog = id => {
     const blog = blogs.find(blog => blog.id === id)
-    const likedBlog = {...blog, likes: blog.likes+1}
+    const likedBlog = { ...blog, likes: blog.likes+1 }
     likedBlog.user = likedBlog.user.id
     blogService
       .update(id, likedBlog)
       .then(() => {
         blogService.getAll().then(blogs =>
           setBlogs( blogs )
-        ) 
+        )
       })
   }
 
@@ -108,15 +108,15 @@ const App = () => {
       .then(() => {
         blogService.getAll().then(blogs =>
           setBlogs( blogs )
-        ) 
+        )
       })
   }
 
   const addBlog = (newBlog) => {
     newBlog.user = JSON.stringify(user.id)
     blogService
-    .create(newBlog)
-    .then(returnedBlog => {
+      .create(newBlog)
+      .then(returnedBlog => {
         const data = returnedBlog.data
         newNotification(`Added new blog. ${data.title} by ${data.author}` )
         console.log(`${JSON.stringify(returnedBlog.data)}`)
@@ -124,9 +124,9 @@ const App = () => {
 
         blogService.getAll().then(blogs =>
           setBlogs( blogs )
-        ) 
+        )
       })
-      .catch(err => {
+      .catch( () => {
         newNotification('fill all fields')
         return false
       })
@@ -140,7 +140,7 @@ const App = () => {
         <div className='notification'>
           {message}
         </div>
-        )
+      )
   }
 
   return (
@@ -148,24 +148,24 @@ const App = () => {
       <h2>blogs</h2>
       <Notification message={errorMessage} />
 
-      {user === null 
-        ? loginForm() 
+      {user === null
+        ? loginForm()
         : <div>
-            <p>{user.name} logged in</p>
-            <Togglable buttonLabel="create new blog" ref={blogFormRef}>
-              <BlogForm addBlog={addBlog} />
-            </Togglable>
-            {logoutButton()}
-           </div>
+          <p>{user.name} logged in</p>
+          <Togglable buttonLabel="create new blog" ref={blogFormRef}>
+            <BlogForm addBlog={addBlog} />
+          </Togglable>
+          {logoutButton()}
+        </div>
       }
       {console.log(JSON.stringify(user))}
       {blogs.sort((a,b) => a.likes >= b.likes ? -1 : 1).map(blog =>
-        <Blog 
-        key={blog.id} 
-        blog={blog} 
-        likeBlog={likeBlog} 
-        deleteBlog={deleteBlog} 
-        user={(user)}
+        <Blog
+          key={blog.id}
+          blog={blog}
+          likeBlog={likeBlog}
+          deleteBlog={deleteBlog}
+          user={(user)}
         />
       )}
     </div>
