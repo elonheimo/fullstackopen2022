@@ -6,18 +6,42 @@ describe('Blog', function () {
     password: 'salainen'
   }
   let authToken
-  const blog = {
+  const blogs = [{
     title: 'init title',
     author: 'init author',
     url: 'www.defaultURL.com',
-    likes: '1337',
+    likes: '1337'
+  }, {
+    title: '3rd by likes',
+    author: 'init author',
+    url: 'www.defaultURL.com',
+    likes: '2000'
+  }, {
+    title: '2nd by likes',
+    author: 'init author',
+    url: 'www.defaultURL.com',
+    likes: '3000'
+  }, {
+    title: '1st by likes',
+    author: 'init author',
+    url: 'www.defaultURL.com',
+    likes: '4000'
+  }]
+  const createBlogAndRefreshPage = (blogToCreate) => {
+    cy.request({
+      method: 'POST',
+      url: 'http://localhost:3003/api/blogs/',
+      auth: { bearer: authToken },
+      body: blogToCreate
+    })
+    cy.visit('http://localhost:3000')
   }
   beforeEach(function () {
     cy.request('POST', 'http://localhost:3003/api/testing/reset')
 
     cy.request('POST', 'http://localhost:3003/api/users/', user)
     // eslint-disable-next-line no-unused-vars
-    const { name, ...loginParams } = blog
+    const { name, ...loginParams } = blogs[0]
     cy.request('POST', 'http://localhost:3003/api/login/',
       { username: user.username, password: user.password }
     ).then(
@@ -63,24 +87,35 @@ describe('Blog', function () {
       cy.contains('blog title')
     })
 
-
-    it('A blog can be liked', function () {
-      cy.request({
-        method: 'POST',
-        url: 'http://localhost:3003/api/blogs/',
-        auth: { bearer: authToken },
-        body: blog
+    describe('When a blogs are created', function () {
+      beforeEach(function () {
+        blogs.forEach(blog => createBlogAndRefreshPage(blog))
       })
 
-      cy.visit('http://localhost:3000')
-      cy.get(`[data-cy="blog-info-${blog.title.split(' ').join('')}"]`)
-        .within(() => {
-          cy.contains('show').click()
-          cy.contains(blog.likes)
-          cy.contains('like').click()
-          cy.contains((parseInt(blog.likes)+1).toString())
-        })
+      it('A blog can be liked', function () {
+        const blog = blogs[0]
+        cy.get(`[data-cy="blog-info-${blog.title.split(' ').join('')}"]`)
+          .within(() => {
+            cy.contains('show').click()
+            cy.contains(blog.likes)
+            cy.contains('like').click()
+            cy.contains((parseInt(blog.likes)+1).toString())
+          })
+      })
+      it('A blog can be deleted', function () {
+        const blog = blogs[0]
+        cy.get(`[data-cy="blog-info-${blog.title.split(' ').join('')}"]`)
+          .within(() => {
+            cy.contains('show').click()
+            cy.contains('Remove').click()
+          })
+        cy.get(`[data-cy="blog-info-${blog.title.split(' ').join('')}"]`).should('not.exist')
+      })
+      it('Blogs are ordered by likes', function () {
+        cy.get('.blog').eq(0).should('contain', blogs[3].title)
+        cy.get('.blog').eq(1).should('contain', blogs[2].title)
+        cy.get('.blog').eq(2).should('contain', blogs[1].title)
+      })
     })
-
   })
 })

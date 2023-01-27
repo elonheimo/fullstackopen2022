@@ -25,7 +25,7 @@ const Blog = ({ blog, likeBlog, deleteBlog, user }) => {
   }
   const [showDetails, setShowDetails] = useState(false)
   return(
-    <div style={blogStyle} data-cy={`blog-info-${blog.title.split(' ').join('') }`}>
+    <div style={blogStyle} className='blog' data-cy={`blog-info-${blog.title.split(' ').join('') }`}>
       {blog.title}
       {
         showDetails  === false
