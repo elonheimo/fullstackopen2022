@@ -5,6 +5,9 @@ import { createAnecdote } from "../requests"
 const AnecdoteForm = () => {
   
   const queryClient = useQueryClient()
+
+  const dispatchNotification = useNotificationDispatch()
+
   const newAnecdoteMutation = useMutation(
     createAnecdote,{
       onSuccess: (newAnecdote) => {
@@ -13,7 +16,16 @@ const AnecdoteForm = () => {
           'anecdotes',
           anecdotes.concat(newAnecdote)
         )
-      }}
+      },
+      onError: () => {
+        dispatchNotification({
+          type: 'NOTIFY', payload: 'too short anecdote, must have length 5 or more.'
+        })
+        setTimeout(() => {
+          dispatchNotification({ type: 'NOTIFY', payload: '' })
+        }, 5 * 1000)
+      }
+}
   )    
 
   const asObject = (anecdote) => {
@@ -24,7 +36,6 @@ const AnecdoteForm = () => {
       votes: 0
     }
   }
-  const dispatchNotification = useNotificationDispatch()
   const onCreate = (event) => {
     event.preventDefault()
     const newAnecdote = asObject(event.target.anecdote.value)
