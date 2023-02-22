@@ -1,0 +1,69 @@
+{
+  "notes": [
+    {
+      "id": 1,
+      "content": "custom hooks are awesome"
+    },
+    {
+      "id": 2,
+      "content": "best feature ever <3"
+    },
+    {
+      "content": "uus muistiinpano",
+      "id": 3
+    },
+    {
+      "content": "uus muistiinpano",
+      "id": 4
+    },
+    {
+      "content": "uus muistiinpano",
+      "id": 5
+    },
+    {
+      "content": "uus muistiinpano",
+      "id": 6
+    },
+    {
+      "content": "uus muistiinpano",
+      "id": 7
+    },
+    {
+      "content": "uus muistiinpano",
+      "id": 8
+    },
+    {
+      "content": "uus muistiinpano",
+      "id": 9
+    },
+    {
+      "content": "moro",
+      "id": 10
+    },
+    {
+      "content": "moro",
+      "id": 11
+    },
+    {
+      "content": "moro",
+      "id": 12
+    }
+  ],
+  "persons": [
+    {
+      "id": 1,
+      "name": "Matti Luukkainen",
+      "number": "040-12344565"
+    },
+    {
+      "id": 2,
+      "name": "Tarja Halonen",
+      "number": "040-2223334"
+    },
+    {
+      "name": "johannes",
+      "number": "112",
+      "id": 3
+    }
+  ]
+}
