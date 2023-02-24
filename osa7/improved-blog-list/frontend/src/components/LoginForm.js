@@ -1,12 +1,19 @@
 import { useState } from 'react'
+import { useNotify } from '../NotificationContext';
+import { useLogin } from '../UserContext';
 
-const LoginForm = ({ onLogin }) => {
+const LoginForm = () => {
   const [username, setUsername] = useState('')
   const [password, setPassword] = useState('')
-
-  const handleSubmit = (event) => {
+  const login = useLogin()
+  const showNotification = useNotify()
+  const notifyWith = (message, type = "info") => {
+    showNotification(message);
+  };
+  const handleSubmit = async (event) => {
     event.preventDefault()
-    onLogin(username, password)
+    const message = await login({ username, password })
+    notifyWith(message)
   }
 
   return (

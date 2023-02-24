@@ -5,6 +5,7 @@ const saveUser = (user) => {
 }
 
 const loadUser = () => {
+  console.log('logged user', JSON.parse(window.localStorage.getItem(KEY)))
   return JSON.parse(window.localStorage.getItem(KEY))
 }
 

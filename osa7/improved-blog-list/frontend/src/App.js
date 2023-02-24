@@ -4,29 +4,28 @@ import blogService from "./services/blogs";
 import loginService from "./services/login";
 import storageService from "./services/storage";
 
-import LoginForm from "./components/Login";
+import LoginForm from "./components/LoginForm";
 import NewBlog from "./components/NewBlog";
 import Notification from "./components/Notification";
 import Togglable from "./components/Togglable";
 import { useNotify } from "./NotificationContext";
 import { useMutation, useQuery, useQueryClient } from "react-query";
+import { useEmptyUserValue, useUserValue } from "./UserContext";
 
 const App = () => {
-  //const [blogs, setBlogs] = useState([]);
-  const [user, setUser] = useState("");
-  //const [info, setInfo] = useState({ message: null })
   const queryClient = useQueryClient();
 
   const blogs = useQuery("blogs", blogService.getAll, {
     refetchOnWindowFocus: false,
   });
+  const showNotification = useNotify();
+  const notifyWith = (message, type = "info") => {
+    showNotification(message);
+  };
+
   console.log("blogs", blogs);
   const blogFormRef = useRef();
 
-  useEffect(() => {
-    const user = storageService.loadUser();
-    setUser(user);
-  }, []);
   const newBlogMutation = useMutation(blogService.create, {
     onSuccess: (newNote) => {
       const notes = queryClient.getQueryData("blogs");
@@ -43,26 +42,9 @@ const App = () => {
       queryClient.invalidateQueries("blogs");
     },
   });
-
-  const showNotification = useNotify();
-  const notifyWith = (message, type = "info") => {
-    showNotification(message);
-  };
-
-  const login = async (username, password) => {
-    try {
-      const user = await loginService.login({ username, password });
-      setUser(user);
-      storageService.saveUser(user);
-      notifyWith("welcome!");
-    } catch (e) {
-      notifyWith("wrong username or password", "error");
-    }
-  };
-
+  const emptyUser = useEmptyUserValue()
   const logout = async () => {
-    setUser(null);
-    storageService.removeUser();
+    emptyUser()
     notifyWith("logged out");
   };
 
@@ -89,13 +71,13 @@ const App = () => {
       notifyWith(`The blog' ${blog.title}' by '${blog.author} removed`);
     }
   };
-
+  const user = useUserValue()
   if (!user) {
     return (
       <div>
         <h2>log in to application</h2>
         <Notification />
-        <LoginForm login={login} />
+        <LoginForm />
       </div>
     );
   }
